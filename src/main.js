@@ -8,35 +8,28 @@ form.addEventListener('submit', onSubmit);
 
 function onSubmit(evt) {
   evt.preventDefault();
-  const searchRequest = input.value.trim();
+
+  const searchRequest = input.value;
+
   if (!searchRequest) return;
 
   input.value = '';
 
   const loader = document.querySelector('.loader');
+
   loader.style.display = 'block';
 
-  const gallery = document.querySelector('.gallery');
-  gallery.innerHTML = '';
+  setTimeout(() => {
+    loader.style.display = 'none';
+  }, 1000);
 
   fetchImg(searchRequest)
     .then(data => searchResults(data.data.hits))
-    .catch(err => {
-      console.error(err);
-      showMessage();
-    })
-    .finally(() => {
-      loader.style.display = 'none';
-    });
+    .catch(err => console.log(err));
 }
 
 function searchResults(images) {
-  if (!images.length) {
-    showMessage();
-    const gallery = document.querySelector('.gallery');
-    gallery.innerHTML = ''; 
-    return;
-  }
+  if (!images.length) showMessage();
 
   imagesTemplate(images);
 }

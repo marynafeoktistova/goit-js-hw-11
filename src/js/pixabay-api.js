@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 export default function fetchImg(searchRequest) {
   const options = {
     params: {
