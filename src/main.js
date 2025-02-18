@@ -1,5 +1,7 @@
 import fetchImg from './js/pixabay-api';
 import { imagesTemplate, showMessage } from './js/render-functions';
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 
 const form = document.querySelector('.search-form');
 const input = document.querySelector('.search-input');
@@ -9,27 +11,34 @@ form.addEventListener('submit', onSubmit);
 function onSubmit(evt) {
   evt.preventDefault();
 
-  const searchRequest = input.value;
-
+  let searchRequest = input.value.trim();
   if (!searchRequest) return;
 
   input.value = '';
+  document.querySelector('.gallery').innerHTML = ''; 
 
   const loader = document.querySelector('.loader');
-
   loader.style.display = 'block';
 
-  setTimeout(() => {
-    loader.style.display = 'none';
-  }, 1000);
-
   fetchImg(searchRequest)
-    .then(data => searchResults(data.data.hits))
-    .catch(err => console.log(err));
+    .then(data => {
+      loader.style.display = 'none';
+      if (data.data.hits.length === 0) {
+        showMessage(); 
+      } else {
+        searchResults(data.data.hits); 
+      }
+    })
+    .catch(err => {
+      loader.style.display = 'none';
+      iziToast.error({
+        title: 'Error',
+        message: 'Opss...',
+      });
+      console.error('Error details:', err);
+    });
 }
 
 function searchResults(images) {
-  if (!images.length) showMessage();
-
-  imagesTemplate(images);
+  imagesTemplate(images); 
 }
